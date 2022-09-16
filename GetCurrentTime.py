@@ -1,3 +1,5 @@
+# PURPOSE - This program is for retrieving and converting time data to make it more legible
+
 from datetime import *
 import sched, time
 
@@ -33,10 +35,20 @@ class GetCurrentTime:
         self.timestamp_timezone_adjustments_EST = {'Kraken': -4}
 
 
-    def getTimeString(self):
+    def getTimeString(self, include_seconds=False):
         currentTime = str(datetime.now())
-        self.currentTimeString = currentTime.split(':')[0].split(' ')[1] + ':' + currentTime.split(':')[1] + '.' + \
-                                 currentTime.split(':')[2].split('.')[0]
+        hour = currentTime.split(':')[0].split(' ')[1]
+        if int(hour) % 12 == int(hour):
+            AM_or_PM = 'AM'
+        else:
+            AM_or_PM = 'PM'
+            hour = str(int(hour) % 12)
+        minute = currentTime.split(':')[1]
+        if include_seconds:
+            second = currentTime.split(':')[2].split('.')[0]
+            self.currentTimeString = hour + ':' + minute + '.' + second
+        else:
+            self.currentTimeString = hour + ':' + minute + ' ' + AM_or_PM
         return(self.currentTimeString)
 
     def getHourString(self):
@@ -72,6 +84,13 @@ class GetCurrentTime:
     def getTimeStamp(self):
         self.currentTimeStamp = time.time()
         return(self.currentTimeStamp)
+
+    def convert_TimeStampToDays(self, timeStamp):
+        seconds = timeStamp
+        minutes = seconds / 60
+        hours = minutes / 60
+        days = round(hours / 24, 3)
+        return(days)
 
     def convert_TimeStampToDate(self, timeStamp):
         valid_conversion = False
@@ -249,8 +268,4 @@ class GetCurrentTime:
                         print('LEAP! Actually, this year is also  ||divisible by 400||  so it IS a leap year!')
                     leapYear = True
         return(leapYear)
-            
-
-GCT = GetCurrentTime()
-GCT.convert_TimeStampToDateTime(1620067740000)
 
